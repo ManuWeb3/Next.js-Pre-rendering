@@ -24,7 +24,7 @@ export async function getStaticProps() {
     try {
         const response = await fetch("https://jsonplaceholder.typicode.com/users")
         const data = await response.json()
-        console.log(data)
+        // console.log(data)
         return {
             props: {            // props1 can be param above BUT 'users' prop/key MUST be same as 'users'
                 users: data     // key: value-> 'data' fetched from ext. API
