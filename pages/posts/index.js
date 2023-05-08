@@ -27,20 +27,22 @@ export default function PostsList({ posts }) {
     )
 }
 
+// runs at Build
 export async function getStaticProps() {
     try {
         const response = await fetch("https://jsonplaceholder.typicode.com/posts")
         const data = await response.json()
         return {
             props: {
-                posts : data.slice(0,3)
+                posts : data
                 }
             }
         }
+        
     catch (error) {
         console.log(error)
     }
     finally {
-        console.log("Inside finally")
+        console.log("Inside posts-finally")
     }
 }

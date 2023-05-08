@@ -3,15 +3,16 @@
 // Not (without data) case
 // it's (With data) case
 
-import { useRouter } from "next/router" // imported to fix build error
+// import { useRouter } from "next/router" // imported to fix build error
 
 export default function Post ({ post }) {
     // imported useRouter above but used useRouter right here
-    const router = useRouter()
+    // const router = useRouter()
 
-    if (router.isFallback) {
-        return <h1>Loading...</h1>
-    }
+    // Fallback UI: absent for "blocking" mode
+    // if (router.isFallback) {
+    //     return <h1>Loading...</h1>
+    // }
 
     return (
         <>
@@ -22,6 +23,7 @@ export default function Post ({ post }) {
     )
 }
 
+// runs at Build
 export async function getStaticPaths() {
     // 2 keys (paths, fallback) inside the returned object below
 
@@ -45,24 +47,37 @@ export async function getStaticPaths() {
             {
                 params: {postId: '3'},
             },
+            {
+                params: {postId: '4'},
+            },
         ],
 
         // the value paths is the variable that's an array returned by .map()
         // paths: paths,
-        fallback: true
+        fallback: 'blocking'
     }
 }
 
+// runs at Build
 export async function getStaticProps(context) {
     
     const { params } = context
     // below fetch() does not fetch all the 3 or 100 posst' data
     // rather, only the one that gets clicked at a time, dynamically
+    
     try {
         const response = await fetch(`https://jsonplaceholder.typicode.com/posts/${params.postId}`)
         // cannot hard code 1 at the end of API above
         // Enter - context.params
         const data = await response.json()
+        // check if data returned from API
+        if(!data.id) {
+            console.log(data.id)
+            return {
+                notFound: true
+            }
+        }
+
         console.log(`Generating page for the /posts/${params.postId}`)
 
         return {
@@ -75,6 +90,6 @@ export async function getStaticProps(context) {
         console.log(error)
     }
     finally {
-        console.log("Inside finally")
+        console.log("Inside [postId]-finally")   // "finally" runs even when either of the 2xreturns above execute
     }
 }
